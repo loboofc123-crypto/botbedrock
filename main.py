@@ -1,12 +1,11 @@
-from python_aternos import Client
+from python_aternos import Client, AtWs
 
 # Insira seus dados reais do Aternos
 USERNAME = 'loboofc123'
 PASSWORD = '1144818722'
-SERVER_ADDRESS = 'loboofc123.aternos.me'
 
 def iniciar_bot():
-    print("Iniciando conexão com o Aternos...")
+    print("Conectando à conta Aternos...")
     try:
         aternos = Client.from_credentials(USERNAME, PASSWORD)
         servidores = aternos.list_servers()
@@ -15,34 +14,23 @@ def iniciar_bot():
             print("Nenhum servidor encontrado na conta.")
             return
 
-        # Tenta encontrar o servidor pelo endereço ou pega o primeiro da lista
-        servidor = None
-        for s in servidores:
-            if SERVER_ADDRESS in s.address:
-                servidor = s
-                break
-        
-        if not servidor:
-            servidor = servidores[0]
+        # Pega o primeiro servidor disponível na conta
+        servidor = servidores[0]
+        print(f"Servidor encontrado: {servidor.domain}")
 
-        print(f"Servidor selecionado: {servidor.address}")
-
-        # Atualiza o estado
+        # Força a atualização e envia o start
         servidor.fetch()
-        status = servidor.status
-        print(f"Status atual: {status}")
+        print(f"Status atual: {servidor.status}")
 
-        if status == 'offline':
-            print("Servidor desligado! Enviando comando de inicialização...")
+        if servidor.status != 'online' and servidor.status != 'queue':
+            print("Enviando comando para ligar o servidor...")
             servidor.start()
-            print("Comando enviado com sucesso!")
-        elif status == 'queue':
-            print("O servidor já está na fila de espera.")
+            print("Comando de inicialização enviado com sucesso!")
         else:
-            print(f"O servidor está no estado: {status}")
+            print(f"O servidor já está no estado: {servidor.status}")
 
     except Exception as e:
-        print(f"Erro ao interagir com o Aternos: {e}")
+        print(f"Erro ao conectar ou ligar o servidor: {e}")
 
 if __name__ == '__main__':
     iniciar_bot()
