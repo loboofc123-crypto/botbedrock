@@ -1,4 +1,3 @@
-import time
 from python_aternos import Client
 
 # Coloque seus dados reais do Aternos entre as aspas
@@ -18,26 +17,22 @@ def iniciar_bot():
         servidor = servidores[0]
         print(f"Monitorando servidor: {servidor.address}")
 
-        while True:
-            try:
-                servidor.fetch()
-                status = servidor.status
-                print(f"[{time.strftime('%H:%M:%S')}] Status atual: {status}")
+        # Atualiza os dados do servidor
+        servidor.fetch()
+        status = servidor.status
+        print(f"Status atual do servidor: {status}")
 
-                if status == 'offline':
-                    print("Servidor desligado! Enviando comando para ligar...")
-                    servidor.start()
-                elif status == 'queue':
-                    print("Na fila do Aternos...")
-
-            except Exception as e:
-                print(f"Erro na checagem: {e}")
-
-            # Espera 60 segundos antes de checar de novo
-            time.sleep(60)
+        if status == 'offline':
+            print("Servidor desligado! Enviando comando para ligar...")
+            servidor.start()
+            print("Comando de ligar enviado com sucesso!")
+        elif status == 'queue':
+            print("O servidor está na fila do Aternos.")
+        else:
+            print("O servidor já está online ou a ligar.")
 
     except Exception as e:
-        print(f"Erro ao autenticar: {e}")
+        print(f"Erro ao gerenciar o servidor: {e}")
 
 if __name__ == '__main__':
     iniciar_bot()
