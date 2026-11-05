@@ -1,8 +1,9 @@
 from python_aternos import Client
 
-# Coloque seus dados reais do Aternos entre as aspas
+# Insira seus dados reais do Aternos
 USERNAME = 'loboofc123'
 PASSWORD = '1144818722'
+SERVER_ADDRESS = 'loboofc123.aternos.me'
 
 def iniciar_bot():
     print("Iniciando conexão com o Aternos...")
@@ -11,28 +12,37 @@ def iniciar_bot():
         servidores = aternos.list_servers()
 
         if not servidores:
-            print("Nenhum servidor encontrado.")
+            print("Nenhum servidor encontrado na conta.")
             return
 
-        servidor = servidores[0]
-        print(f"Monitorando servidor: {servidor.address}")
+        # Tenta encontrar o servidor pelo endereço ou pega o primeiro da lista
+        servidor = None
+        for s in servidores:
+            if SERVER_ADDRESS in s.address:
+                servidor = s
+                break
+        
+        if not servidor:
+            servidor = servidores[0]
 
-        # Atualiza os dados do servidor
+        print(f"Servidor selecionado: {servidor.address}")
+
+        # Atualiza o estado
         servidor.fetch()
         status = servidor.status
-        print(f"Status atual do servidor: {status}")
+        print(f"Status atual: {status}")
 
         if status == 'offline':
-            print("Servidor desligado! Enviando comando para ligar...")
+            print("Servidor desligado! Enviando comando de inicialização...")
             servidor.start()
-            print("Comando de ligar enviado com sucesso!")
+            print("Comando enviado com sucesso!")
         elif status == 'queue':
-            print("O servidor está na fila do Aternos.")
+            print("O servidor já está na fila de espera.")
         else:
-            print("O servidor já está online ou a ligar.")
+            print(f"O servidor está no estado: {status}")
 
     except Exception as e:
-        print(f"Erro ao gerenciar o servidor: {e}")
+        print(f"Erro ao interagir com o Aternos: {e}")
 
 if __name__ == '__main__':
     iniciar_bot()
