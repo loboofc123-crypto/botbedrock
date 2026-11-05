@@ -1,36 +1,31 @@
-from python_aternos import Client, AtWs
+from python_aternos import Client
 
-# Insira seus dados reais do Aternos
 USERNAME = 'loboofc123'
 PASSWORD = '1144818722'
 
 def iniciar_bot():
-    print("Conectando à conta Aternos...")
+    print("Iniciando conexão com a API do Aternos...")
     try:
         aternos = Client.from_credentials(USERNAME, PASSWORD)
-        servidores = aternos.list_servers()
+        
+        # Acede diretamente ao primeiro servidor associado à conta
+        servidor = aternos.user.servers[0]
+        print(f"Servidor localizado: {servidor.domain}")
 
-        if not servidores:
-            print("Nenhum servidor encontrado na conta.")
-            return
-
-        # Pega o primeiro servidor disponível na conta
-        servidor = servidores[0]
-        print(f"Servidor encontrado: {servidor.domain}")
-
-        # Força a atualização e envia o start
         servidor.fetch()
-        print(f"Status atual: {servidor.status}")
+        print(f"Estado atual: {servidor.status}")
 
-        if servidor.status != 'online' and servidor.status != 'queue':
-            print("Enviando comando para ligar o servidor...")
+        if servidor.status == 'offline':
+            print("O servidor está offline. A enviar comando para ligar...")
             servidor.start()
-            print("Comando de inicialização enviado com sucesso!")
+            print("Comando enviado com sucesso!")
+        elif servidor.status == 'queue':
+            print("O servidor já está na fila de espera.")
         else:
-            print(f"O servidor já está no estado: {servidor.status}")
+            print(f"O servidor encontra-se no estado: {servidor.status}")
 
     except Exception as e:
-        print(f"Erro ao conectar ou ligar o servidor: {e}")
+        print(f"Ocorreu um erro ao interagir com o Aternos: {e}")
 
 if __name__ == '__main__':
     iniciar_bot()
