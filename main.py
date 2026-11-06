@@ -1,5 +1,10 @@
+import os
+from flask import Flask
 import requests
+import threading
 import time
+
+app = Flask(__name__)
 
 USERNAME = 'loboofc123'
 PASSWORD = '1144818722'
@@ -17,25 +22,21 @@ def ligar_aternos():
     })
 
     try:
-        # Passo 1: Obter cookies iniciais de segurança
         session.get('https://aternos.org/')
         time.sleep(1)
         
         session.get('https://aternos.org/go/')
         time.sleep(1)
         
-        # Passo 2: Efetuar o login
         login_res = session.post('https://aternos.org/panel/ajax/account/login.php', data={
             'username': USERNAME,
             'password': PASSWORD
         })
         print(f"Estado do Login: {login_res.status_code}")
 
-        # Passo 3: Aceder à página de servidores para carregar o token de sessão
         session.get('https://aternos.org/panel/ajax/servers.php')
         time.sleep(1)
 
-        # Passo 4: Disparar o comando para ligar o servidor
         start_res = session.get('https://aternos.org/panel/ajax/start.php')
         print(f"Resposta do comando Ligar: {start_res.status_code}")
         print("Comando disparado com sucesso para o Aternos!")
@@ -43,8 +44,14 @@ def ligar_aternos():
     except Exception as e:
         print(f"Erro crítico na execução: {e}")
 
+@app.route('/')
+def home():
+    return "Bot Aternos online e a funcionar!"
+
 if __name__ == '__main__':
-    ligar_aternos()
-    # Mantém o Render acordado para não gerar erro de saída antecipada
-    while True:
-        time.sleep(3600)
+    # Dispara o comando para ligar o servidor em segundo plano logo ao iniciar
+    threading.Thread(target=ligar_aternos).start()
+    
+    # Inicia o servidor web na porta exigida pelo Render
+    port = int(os.environ.get('PORT', 10000))
+    app.run(host='0.0.0.0', port=port)
