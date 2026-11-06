@@ -49,9 +49,9 @@ def home():
     return "Bot Aternos online e a funcionar!"
 
 if __name__ == '__main__':
-    # Dispara o comando para ligar o servidor em segundo plano logo ao iniciar
+    # Dispara o comando para ligar o Aternos em segundo plano
     threading.Thread(target=ligar_aternos).start()
     
-    # Inicia o servidor web na porta exigida pelo Render
+    # Sobe o servidor Flask na porta que o Render exige de graça
     port = int(os.environ.get('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
